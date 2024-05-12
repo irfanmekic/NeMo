@@ -152,6 +152,7 @@ def get_nmt_tokenizer(
     r2l: Optional[bool] = False,
     legacy: Optional[bool] = False,
     delimiter: Optional[str] = None,
+    truncation: Optional[str] = None
 ):
     """
     Args:
@@ -186,6 +187,7 @@ def get_nmt_tokenizer(
             merges_file=merges_file,
             **special_tokens_dict,
             use_fast=use_fast,
+            truncation=truncation
         )
     elif library == 'sentencepiece':
         logging.info(f'Getting SentencePiece with model: {tokenizer_model}')
