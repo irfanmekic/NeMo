@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from collections import OrderedDict
+from math import trunc
 from typing import Optional
 
 from transformers import AutoTokenizer as AUTOTOKENIZER
@@ -65,11 +66,11 @@ class AutoTokenizer(TokenizerSpec):
             # this logic deals with different huggingface tokenizers having different positional args
             if vocab_file is None:
                 self.tokenizer = AUTOTOKENIZER.from_pretrained(
-                    pretrained_model_name_or_path=pretrained_model_name, use_fast=use_fast,
+                    pretrained_model_name_or_path=pretrained_model_name, use_fast=use_fast, truncation=True
                 )
             elif merges_file is None:
                 self.tokenizer = AUTOTOKENIZER.from_pretrained(
-                    pretrained_model_name_or_path=pretrained_model_name, vocab_file=vocab_file, use_fast=use_fast,
+                    pretrained_model_name_or_path=pretrained_model_name, vocab_file=vocab_file, use_fast=use_fast,truncation=True
                 )
             else:
                 self.tokenizer = AUTOTOKENIZER.from_pretrained(
@@ -77,6 +78,7 @@ class AutoTokenizer(TokenizerSpec):
                     vocab_file=vocab_file,
                     merges_file=merges_file,
                     use_fast=use_fast,
+                    truncation=True
                 )
         except Exception as e:
             raise ValueError(
