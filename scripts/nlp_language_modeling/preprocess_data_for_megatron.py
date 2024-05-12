@@ -131,6 +131,7 @@ def get_tokenizer(args):
         vocab_file=args.vocab_file,
         merges_file=args.merge_file,
         delimiter=args.delimiter,
+        truncation=args.truncation
     )
     if args.need_pad_id:
         if not hasattr(tokenizer, "pad_id"):
@@ -251,6 +252,10 @@ def get_args():
         help='If set, will preprocess all .json or .json.gz files into a single .bin and .idx file. Folder path provided via the --input arg',
     )
     group.add_argument('--apply-ftfy', action='store_true', help='If set, will apply ftfy to the input text')
+    
+    # custom args for dataset processing
+    group.add_argument('--truncation', action='store_true', help='If set, will truncate inputs to max length that model accepts')
+    
     args = parser.parse_args()
     args.keep_empty = False
 

@@ -44,6 +44,7 @@ class AutoTokenizer(TokenizerSpec):
         cls_token: Optional[str] = None,
         unk_token: Optional[str] = None,
         use_fast: Optional[bool] = False,
+        truncation: Optional[bool] = False
     ):
 
         """
@@ -66,11 +67,11 @@ class AutoTokenizer(TokenizerSpec):
             # this logic deals with different huggingface tokenizers having different positional args
             if vocab_file is None:
                 self.tokenizer = AUTOTOKENIZER.from_pretrained(
-                    pretrained_model_name_or_path=pretrained_model_name, use_fast=use_fast, truncation=True
+                    pretrained_model_name_or_path=pretrained_model_name, use_fast=use_fast, truncation=truncation
                 )
             elif merges_file is None:
                 self.tokenizer = AUTOTOKENIZER.from_pretrained(
-                    pretrained_model_name_or_path=pretrained_model_name, vocab_file=vocab_file, use_fast=use_fast,truncation=True
+                    pretrained_model_name_or_path=pretrained_model_name, vocab_file=vocab_file, use_fast=use_fast,truncation=truncation
                 )
             else:
                 self.tokenizer = AUTOTOKENIZER.from_pretrained(
@@ -78,7 +79,7 @@ class AutoTokenizer(TokenizerSpec):
                     vocab_file=vocab_file,
                     merges_file=merges_file,
                     use_fast=use_fast,
-                    truncation=True
+                    truncation=truncation
                 )
         except Exception as e:
             raise ValueError(

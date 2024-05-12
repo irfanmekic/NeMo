@@ -152,7 +152,7 @@ def get_nmt_tokenizer(
     r2l: Optional[bool] = False,
     legacy: Optional[bool] = False,
     delimiter: Optional[str] = None,
-    truncation: Optional[str] = None
+    truncation: Optional[bool] = False
 ):
     """
     Args:
@@ -180,15 +180,26 @@ def get_nmt_tokenizer(
         logging.info(f'Getting YouTokenToMeTokenizer with model: {tokenizer_model} with r2l: {r2l}.')
         return YouTokenToMeTokenizer(model_path=tokenizer_model, bpe_dropout=bpe_dropout, r2l=r2l)
     elif library == 'huggingface':
-        logging.info(f'Getting HuggingFace AutoTokenizer with pretrained_model_name: {model_name}')
-        return AutoTokenizer(
-            pretrained_model_name=model_name,
-            vocab_file=vocab_file,
-            merges_file=merges_file,
-            **special_tokens_dict,
-            use_fast=use_fast,
-            truncation=truncation
-        )
+        if model_name != 'custom':
+            logging.info(f'Getting HuggingFace AutoTokenizer with pretrained_model_name: {model_name}')
+            return AutoTokenizer(
+                pretrained_model_name=model_name,
+                vocab_file=vocab_file,
+                merges_file=merges_file,
+                **special_tokens_dict,
+                use_fast=use_fast,
+                truncation=truncation
+            )
+        if model_name == 'custom': #dont pass in a model name when we want to do a custom HF tokenizer
+            logging.info(f'Getting Customized HuggingFace AutoTokenizer from path: {tokenizer_model}')
+            return AutoTokenizer(
+                pretrained_model_name=tokenizer_model,
+                vocab_file=vocab_file,
+                merges_file=merges_file,
+                **special_tokens_dict,
+                use_fast=True,
+                truncation=truncation
+            )
     elif library == 'sentencepiece':
         logging.info(f'Getting SentencePiece with model: {tokenizer_model}')
         return nemo.collections.common.tokenizers.sentencepiece_tokenizer.SentencePieceTokenizer(
