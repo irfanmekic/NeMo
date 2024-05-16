@@ -18,7 +18,7 @@ from typing import Union
 from omegaconf import DictConfig
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelSummary
-from pytorch_lightning.plugins.environments import TorchElasticEnvironment
+from pytorch_lightning.plugins.environments import TorchElasticEnvironment, SLURMEnvironment
 
 from nemo.collections.nlp.parts.nlp_overrides import (
     CustomProgressBar,
@@ -116,7 +116,7 @@ class MegatronTrainerBuilder:
 
         if self.cfg.get('cluster_type', None) == 'BCP':
             plugins.append(TorchElasticEnvironment())
-
+        #plugins.append(SLURMEnvironment())
         return plugins
 
     def create_trainer(self, callbacks=None) -> Trainer:
@@ -124,6 +124,8 @@ class MegatronTrainerBuilder:
         plugins = self._plugins()
         if callbacks is None:
             callbacks = [CustomProgressBar()]
+        slurm_plugin = [SLURMEnvironment()]
+        #print(plugins)
         return Trainer(plugins=plugins, strategy=strategy, **self.cfg.trainer, callbacks=callbacks)
 
 

@@ -139,7 +139,7 @@ def get_tokenizer(args):
         elif hasattr(tokenizer, "pad_id") and (tokenizer.pad_id is None or tokenizer.pad_id < 0):
             tokenizer.add_special_tokens({'pad_token': '<pad>'})
     return tokenizer
-
+    
 
 class Encoder(object):
     def __init__(self, args):
@@ -177,6 +177,8 @@ class Encoder(object):
                 for sentence in Encoder.splitter.tokenize(text):
                     sentence_ids = Encoder.tokenizer.text_to_ids(sentence)
                     if len(sentence_ids) > 0:
+                        if len(sentence_ids) > 16384:
+                            sentence_ids = sentence_ids[:16384]
                         doc_ids.append(sentence_ids)
                 if len(doc_ids) > 0 and self.args.append_eod:
                     doc_ids[-1].append(Encoder.tokenizer.eos_id)
@@ -334,7 +336,7 @@ def main():
         else:
             fin = open(args.input, 'r', encoding='utf-8')
 
-        encoded_docs = pool.imap(encoder.encode, fin, 25)
+        encoded_docs = pool.imap(encoder.encode, fin, args.chunk_size)
 
         for i, (doc, bytes_processed) in enumerate(encoded_docs, start=1):
             total_bytes_processed += bytes_processed
@@ -349,7 +351,7 @@ def main():
                 elapsed = current - proc_start
                 mbs = total_bytes_processed / elapsed / 1024 / 1024
                 print(f"Processed {i} documents", f"({i/elapsed} docs/s, {mbs} MB/s).", file=sys.stderr)
-
+        print("Done")
     for key in args.json_keys:
         builders[key].finalize(output_idx_files[key])
 

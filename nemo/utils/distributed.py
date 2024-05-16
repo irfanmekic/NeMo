@@ -46,7 +46,7 @@ def initialize_distributed(args, backend='nccl'):
     torch.cuda.set_device(device)
 
     # Call the init process.
-    init_method = 'tcp://'
+    init_method = 'env://'
     master_ip = os.getenv('MASTER_ADDR', 'localhost')
     master_port = os.getenv('MASTER_PORT', '6000')
     init_method += master_ip + ':' + master_port

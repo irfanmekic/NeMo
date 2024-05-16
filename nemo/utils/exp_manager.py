@@ -212,6 +212,7 @@ class TimingCallback(Callback):
             batch_size=1,
             prog_bar=(name == "train_step_timing"),
         )
+        
 
     def on_train_batch_start(self, trainer, pl_module, batch, batch_idx):
         self._on_batch_start("train_step_timing")
@@ -326,6 +327,9 @@ def exp_manager(trainer: 'pytorch_lightning.Trainer', cfg: Optional[Union[DictCo
     local_rank = int(os.environ.get("LOCAL_RANK", 0))
     global_rank = trainer.node_rank * trainer.num_devices + local_rank
     logging.rank = global_rank
+    # local_rank = trainer.local_rank
+    # global_rank = trainer.global_rank
+    # logging.rank = global_rank
 
     if cfg is None:
         logging.error("exp_manager did not receive a cfg argument. It will be disabled.")
@@ -552,12 +556,12 @@ def error_checks(trainer: 'pytorch_lightning.Trainer', cfg: Optional[Union[DictC
             f"or create_dllogger_logger: {cfg.create_mlflow_logger} was set to True. "
             "These can only be used if trainer does not already have a logger."
         )
-    if trainer.num_nodes > 1 and not check_slurm(trainer):
+    if trainer.num_nodes >= 1 and not check_slurm(trainer):
         logging.error(
             "You are running multi-node training without SLURM handling the processes."
             " Please note that this is not tested in NeMo and could result in errors."
         )
-    if trainer.num_devices > 1 and not isinstance(trainer.strategy, DDPStrategy):
+    if trainer.num_devices >= 1 and not isinstance(trainer.strategy, DDPStrategy):
         logging.error(
             "You are running multi-gpu without ddp.Please note that this is not tested in NeMo and could result in "
             "errors."
@@ -974,6 +978,7 @@ def configure_checkpointing(
 def check_slurm(trainer):
     try:
         return trainer.accelerator_connector.is_slurm_managing_tasks
+        #return True
     except AttributeError:
         return False
 
