@@ -116,7 +116,8 @@ class MegatronTrainerBuilder:
 
         if self.cfg.get('cluster_type', None) == 'BCP':
             plugins.append(TorchElasticEnvironment())
-        #plugins.append(SLURMEnvironment())
+        if self.cfg.get('cluster_type', None) == 'SLURM':
+            plugins.append(SLURMEnvironment())
         return plugins
 
     def create_trainer(self, callbacks=None) -> Trainer:
@@ -124,8 +125,7 @@ class MegatronTrainerBuilder:
         plugins = self._plugins()
         if callbacks is None:
             callbacks = [CustomProgressBar()]
-        slurm_plugin = [SLURMEnvironment()]
-        #print(plugins)
+        
         return Trainer(plugins=plugins, strategy=strategy, **self.cfg.trainer, callbacks=callbacks)
 
 

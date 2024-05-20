@@ -35,6 +35,7 @@ from pytorch_lightning.core.optimizer import LightningOptimizer
 from pytorch_lightning.loops.fetchers import _DataFetcher
 from pytorch_lightning.overrides.base import _LightningModuleWrapperBase
 from pytorch_lightning.plugins import ClusterEnvironment
+from pytorch_lightning.plugins.environments import SLURMEnvironment
 from pytorch_lightning.plugins.io.checkpoint_plugin import CheckpointIO
 from pytorch_lightning.plugins.precision import MixedPrecisionPlugin
 from pytorch_lightning.strategies import DDPStrategy, FSDPStrategy
@@ -178,7 +179,6 @@ class NLPDDPStrategy(DDPStrategy):
                 "megatron-core was not found. Please see the NeMo README for installation instructions: https://github.com/NVIDIA/NeMo#megatron-gpt."
             )
         super().__init__(parallel_devices, cluster_environment, checkpoint_io, **kwargs)
-
         self.no_ddp_communication_hook = no_ddp_communication_hook
         self.nccl_communicator_config_path = nccl_communicator_config_path
         self.sharp = sharp
